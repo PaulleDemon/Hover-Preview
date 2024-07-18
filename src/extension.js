@@ -8,7 +8,7 @@ const puppeteer = require('puppeteer');
 
 const { getLanguageService } = require('vscode-html-languageservice');
 
-const { HoverWebViewPanel } = require("./webview/previewPanel.js")
+const { HoverWebViewPanel } = require("./webview/previewPanel.js");
 
 
 // This method is called when your extension is activated
@@ -39,15 +39,15 @@ function activate(context) {
 		async provideHover(document, position, token) {
 
 			// const text = document.getText();
-            const offset = document.offsetAt(position);
+			const offset = document.offsetAt(position);
 
 			const fullTag = getHoverTagContents(offset, document, htmlLanguageService);
-			
-			if (fullTag){
+
+			if (fullTag) {
 				console.log("yaa! element");
 				// const fullTag = getFullTagContent(node, document);
 				console.log("Full tag: ", fullTag)
-				
+
 				// return null
 				const imgUri = await renderHtmlToImage(fullTag);
 
@@ -58,14 +58,14 @@ function activate(context) {
 				const hoverContent = new vscode.MarkdownString(`<img src='${imgUri}' width='200' height='200' />`);
 				// const hoverContent = new vscode.MarkdownString(fullTag);
 				hoverContent.supportHtml = true;
-				hoverContent.isTrusted = true; 
+				hoverContent.isTrusted = true;
 				// hoverContent.baseUri = vscode.Uri.file(imgSrc)
-            	return new vscode.Hover(hoverContent);
+				return new vscode.Hover(hoverContent);
 
 			}
 
 			return null;
-        }
+		}
 	});
 
 	context.subscriptions.push(disposableHover);
@@ -80,17 +80,17 @@ function activate(context) {
  * @param {import('vscode-html-languageservice').LanguageService} htmlLanguageService 
  */
 
-function getHoverTagContents(offset, document, htmlLanguageService){
+function getHoverTagContents(offset, document, htmlLanguageService) {
 	const htmlDocument = htmlLanguageService.parseHTMLDocument(document);
 	const node = htmlDocument.findNodeAt(offset);
 
 	const startOffset = node.start;
-    const endOffset = node.end;
+	const endOffset = node.end;
 	const text = document.getText();
-    let subTags = text.substring(startOffset, endOffset + 1);
+	let subTags = text.substring(startOffset, endOffset + 1);
 	const styleAndScriptTags = [];
 
-	if (subTags){
+	if (subTags) {
 		// only if there are tags near hover position add the script and styling tags else forget it
 		htmlDocument.roots.forEach(root => {
 			collectStyleAndScriptTags(root, styleAndScriptTags);
@@ -103,7 +103,7 @@ function getHoverTagContents(offset, document, htmlLanguageService){
 		});
 	}
 
-    return subTags;
+	return subTags;
 }
 
 /**
@@ -113,31 +113,31 @@ function getHoverTagContents(offset, document, htmlLanguageService){
  * @param {any[]} styleAndScriptTags 
  */
 function collectStyleAndScriptTags(node, styleAndScriptTags) {
-    if (node.tag === 'link' || node.tag === 'script') {
-        styleAndScriptTags.push(node);
-    }
+	if (node.tag === 'link' || node.tag === 'script') {
+		styleAndScriptTags.push(node);
+	}
 
-    if (node.children) {
-        node.children.forEach(child => {
-            collectStyleAndScriptTags(child, styleAndScriptTags);
-        });
-    }
+	if (node.children) {
+		node.children.forEach(child => {
+			collectStyleAndScriptTags(child, styleAndScriptTags);
+		});
+	}
 }
 
 async function renderHtmlToImage(html) {
 	const browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-    const screenshot = await page.screenshot({ encoding: 'base64' });
-    await browser.close();
-    return `data:image/png;base64,${screenshot}`;
+		args: ['--no-sandbox', '--disable-setuid-sandbox']
+	});
+	const page = await browser.newPage();
+	await page.setContent(html, { waitUntil: 'networkidle0' });
+	const screenshot = await page.screenshot({ encoding: 'base64' });
+	await browser.close();
+	return `data:image/png;base64,${screenshot}`;
 }
 
 
 // This method is called when your extension is deactivated
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
 	activate,
