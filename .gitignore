@@ -1,0 +1,6 @@
+.vscode-test/**
+.yarnrc
+vsc-extension-quickstart.md
+**/*.map
+**/.eslintrc.json
+node_modules

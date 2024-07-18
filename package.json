@@ -1,0 +1,81 @@
+{
+  "name": "hoverpreview",
+  "displayName": "Hover Preview",
+  "keywords": [
+    "hover preview",
+    "preview on hover html",
+    "html renderer",
+    "quick viewer"
+  ],
+  "description": "hover over html tags to view the rendered output",
+  "author": {
+    "name": "Paul"
+  },
+  "sponsor": {
+    "url": "https://buymeacoffee.com/artpaul"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/PaulleDemon",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PaulleDemon"
+  },
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:html"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "hoverpreview.enablePreview",
+        "category": "Hover preview",
+        "title": "Enable hover preview"
+      },
+      {
+        "command": "hoverpreview.helloWorld",
+        "category": "Hover preview",
+        "title": "Hello world from webview"
+      }
+    ],
+    "languages": [
+      {
+        "id": "html",
+        "aliases": [
+          "HTML",
+          "HTML5"
+        ],
+        "extensions": [
+          ".html"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.91.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.4.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "html-to-image": "^1.11.11",
+    "htmlparser2": "^9.1.0",
+    "puppeteer": "^22.13.1",
+    "vscode-html-languageservice": "^5.3.0"
+  }
+}
