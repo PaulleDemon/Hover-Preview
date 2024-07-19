@@ -1,13 +1,17 @@
 // The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
-const htmlToImage = require('html-to-image');
+const path = require('path');
+const fs = require('fs');
+
+// const htmlToImage = require('html-to-image');
+
+var HTMLParser = require('node-html-parser');
 
 // const htmlparser2 = require('htmlparser2');
 const puppeteer = require('puppeteer');
-
 const { getLanguageService } = require('vscode-html-languageservice');
 
+const { isValidHttpUrl, isLocalFile, getActiveFilePath, toAbsoluteUrl, isUrlEncodedFile } = require("./utils/common.js")
 const { HoverWebViewPanel } = require("./webview/previewPanel.js");
 
 
@@ -35,6 +39,19 @@ function activate(context) {
 
 	const htmlLanguageService = getLanguageService();
 
+	let browser = null;
+	// https://pptr.dev/api/puppeteer.puppeteernodelaunchoptions
+	(async () => {
+		browser = await puppeteer.launch({
+		args: ['--no-sandbox', '--disable-setuid-sandbox'],
+		defaultViewport: {
+			width: 1800,
+			height: 900
+		}
+	});
+	})()
+	console.log("WE: ", )
+
 	const disposableHover = vscode.languages.registerHoverProvider("html", {
 		async provideHover(document, position, token) {
 
@@ -44,18 +61,17 @@ function activate(context) {
 			const fullTag = getHoverTagContents(offset, document, htmlLanguageService);
 
 			if (fullTag) {
-				console.log("yaa! element");
-				// const fullTag = getFullTagContent(node, document);
-				console.log("Full tag: ", fullTag)
+				const baseUri = vscode.workspace.workspaceFolders[0].uri.fsPath;
 
-				// return null
-				const imgUri = await renderHtmlToImage(fullTag);
+				const filePath = path.join(baseUri, '.hoverpreview.temp.html');
+				fs.writeFileSync(filePath, fullTag, 'utf8'); // create a temp file and write the contents
 
-				// console.log("Img uri: ", imgUri)
-
-				// const imgSrc = "https://github.com/PaulleDemon/Django-SAAS-Boilerplate/raw/main/railway.png"
+				const pathUri = vscode.Uri.file(filePath).toString() // adds file:/// eg: file:///home/documents
+				const imgUri = await renderHtmlToImage(browser, pathUri, fullTag);
+				
+				fs.unlink(filePath, ()=>{}) // remove the file after rendering
 				// Include an image in the hover text
-				const hoverContent = new vscode.MarkdownString(`<img src='${imgUri}' width='200' height='200' />`);
+				const hoverContent = new vscode.MarkdownString(`<img src='${imgUri}' width='200' height='200'/>`);
 				// const hoverContent = new vscode.MarkdownString(fullTag);
 				hoverContent.supportHtml = true;
 				hoverContent.isTrusted = true;
@@ -83,6 +99,9 @@ function activate(context) {
 function getHoverTagContents(offset, document, htmlLanguageService) {
 	const htmlDocument = htmlLanguageService.parseHTMLDocument(document);
 	const node = htmlDocument.findNodeAt(offset);
+	const baseUri = vscode.workspace.workspaceFolders[0].uri.fsPath;
+
+	// console.log("Base uri: ", baseUri.toString());
 
 	const startOffset = node.start;
 	const endOffset = node.end;
@@ -91,48 +110,134 @@ function getHoverTagContents(offset, document, htmlLanguageService) {
 	const styleAndScriptTags = [];
 
 	if (subTags) {
-		// only if there are tags near hover position add the script and styling tags else forget it
+		// only if there are tags near hover position add the script and styling tags else don't add
 		htmlDocument.roots.forEach(root => {
-			collectStyleAndScriptTags(root, styleAndScriptTags);
+			addStyleAndScriptTags(root, styleAndScriptTags, baseUri.toString());
 		});
-
 		styleAndScriptTags.forEach(tag => {
 			const tagStart = tag.start;
 			const tagEnd = tag.end;
 			subTags += text.substring(tagStart, tagEnd + 1);
 		});
 	}
+	// console.log("sub tags: ", updateDocumentWithSrcUrl(subTags, baseUri))
 
 	return subTags;
 }
 
+
+/**
+ * 
+ * @param {string} text 
+ */
+function updateDocumentWithSrcUrl(text, baseUri){
+
+	const parseDoc = HTMLParser.parse(text)
+
+	parseDoc.querySelectorAll("link").forEach((ele) => {
+		const href = ele.getAttribute("href");
+
+		if (href && isLocalFile(href)){
+			ele.setAttribute("href",  toAbsoluteUrl(baseUri, href));//vscode.Uri.file(href).toString());
+		}
+	});
+
+	parseDoc.querySelectorAll("img, script, video").forEach((ele) => {
+		const src = ele.getAttribute("src");
+		
+		if (src && isLocalFile(src)){
+			ele.setAttribute("src", toAbsoluteUrl(baseUri, src));
+		}
+	});
+
+	return parseDoc.toString()
+}
+
+
 /**
  * Extracts script and link styling tags and adds to the original styleAndScriptTags list
- * 
+ * This is necessary to render the page with styles applied. If the path is relative then its 
+ * converted to absolute path
  * @param {import('vscode-html-languageservice').Node} node 
  * @param {any[]} styleAndScriptTags 
+ * @param {string} baseUri  
  */
-function collectStyleAndScriptTags(node, styleAndScriptTags) {
+function addStyleAndScriptTags(node, styleAndScriptTags, baseUri) {
+	// console.log("root: ", node.tag)
+
 	if (node.tag === 'link' || node.tag === 'script') {
 		styleAndScriptTags.push(node);
 	}
 
 	if (node.children) {
 		node.children.forEach(child => {
-			collectStyleAndScriptTags(child, styleAndScriptTags);
+			addStyleAndScriptTags(child, styleAndScriptTags, baseUri);
 		});
 	}
 }
 
-async function renderHtmlToImage(html) {
-	const browser = await puppeteer.launch({
-		args: ['--no-sandbox', '--disable-setuid-sandbox']
-	});
-	const page = await browser.newPage();
-	await page.setContent(html, { waitUntil: 'networkidle0' });
-	const screenshot = await page.screenshot({ encoding: 'base64' });
-	await browser.close();
-	return `data:image/png;base64,${screenshot}`;
+/**
+ * updates all links, img, video paths from relative to absolute uris
+ * @param {import('vscode-html-languageservice').Node} node 
+ */
+function updateLocalUris(node, baseUri){
+	
+	if (!["img", "link", "script", "video"].includes(node.tag)){
+		// check if the elements in the list match and they have either href or src attribute
+		return
+	}
+
+	if (node.tag === "link" && Object.hasOwn(node.attributes, "href") && isLocalFile(node.attributes.href)){
+		console.log("updating uri", vscode.Uri.file(node.attributes.href).toString());
+		node.attributes.href = "updated"//toAbsoluteUrl(baseUri, node.attributes.href)
+	}else if (Object.hasOwn(node.attributes, "src") && isLocalFile(node.attributes.src) && 
+				!isUrlEncodedFile(node.attributes.src)){
+		// script tags, img, videos
+		node.attributes.src = "Vola"; //toAbsoluteUrl(baseUri, node.attributes.src)
+	}
+
+}
+
+
+/**
+ * 
+ * @param {string|null} filePath 
+ * @param {string|null} html 
+ * @returns 
+ */
+async function renderHtmlToImage(browser, filePath=null, html=null) {
+	console.log("Path: ",)
+
+	if (!browser){
+		vscode.window.showInformationMessage("Loading extension please wait...");
+		return
+	}
+
+	let page = null;
+
+	if (browser.pages.length === 0){
+		page = await browser.newPage();
+	}else{
+		page = browser.pages[0]
+	}
+	await page.goto(filePath)
+	// https://stackoverflow.com/questions/62592345/puppeteer-wont-load-images-if-page-is-loaded-using-setcontent
+	// await page.setContent(html, { waitUntil:  ["load","networkidle0"] });
+	
+	console.log("Working2")
+	// FIXME: file path
+	const imgPath = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, 'test.png') 
+	console.log("extension path: ",  imgPath)
+	// page.addStyleTag({path: "/css/tailwind-build.css"})
+	// https://pptr.dev/guides/screenshots/
+	const screenshot = await page.screenshot({ 
+												// encoding: 'base64', 
+												omitBackground: false, 
+												path: imgPath
+											});
+	// await browser.close();
+	// return `data:image/png;base64,${screenshot}`;
+	return imgPath;
 }
 
 

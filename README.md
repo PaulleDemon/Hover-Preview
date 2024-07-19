@@ -2,6 +2,8 @@
 
 This is the README for your extension "hover preview". After writing up a brief description, we recommend including the following sections.
 
+https://pptr.dev/guides/system-requirements
+
 ## Features
 
 Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
