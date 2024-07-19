@@ -67,11 +67,11 @@ function activate(context) {
 				fs.writeFileSync(filePath, fullTag, 'utf8'); // create a temp file and write the contents
 
 				const pathUri = vscode.Uri.file(filePath).toString() // adds file:/// eg: file:///home/documents
-				const imgUri = await renderHtmlToImage(browser, pathUri, fullTag);
-				
+				const imgUri = await renderHtmlToImage(browser, context, pathUri, fullTag);
+				console.log("img uri: ", imgUri.fsPath, imgUri.path)
 				fs.unlink(filePath, ()=>{}) // remove the file after rendering
 				// Include an image in the hover text
-				const hoverContent = new vscode.MarkdownString(`<img src='${imgUri}' width='200' height='200'/>`);
+				const hoverContent = new vscode.MarkdownString(`<img src='${imgUri.path}?time=${new Date().getTime()}' alt="rendered preview" width='200' height='200'/>`); // new Date is there to avoid caching and preview new one
 				// const hoverContent = new vscode.MarkdownString(fullTag);
 				hoverContent.supportHtml = true;
 				hoverContent.isTrusted = true;
@@ -87,6 +87,21 @@ function activate(context) {
 	context.subscriptions.push(disposableHover);
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(webviewCommand);
+}
+
+/**
+ * 
+ * @param {import('vscode').ExtensionContext} context 
+ */
+function getGlobalStoragePath(context){
+	const globalStoragePath = context.globalStorageUri.fsPath;
+
+    // Ensure the global storage directory exists
+    if (!fs.existsSync(globalStoragePath)) {
+        fs.mkdirSync(globalStoragePath, { recursive: true });
+    }
+
+    return globalStoragePath
 }
 
 /**
@@ -200,16 +215,18 @@ function updateLocalUris(node, baseUri){
 
 
 /**
- * 
- * @param {string|null} filePath 
+ * uses puppeteer and renders html and takes a screenshot
+ * @param {puppeteer.Browser} browser 
+ * @param {import('vscode').ExtensionContext} context 
+ * @param {string|null} htmlFilePath 
  * @param {string|null} html 
  * @returns 
  */
-async function renderHtmlToImage(browser, filePath=null, html=null) {
+async function renderHtmlToImage(browser, context, htmlFilePath=null, html=null) {
 	console.log("Path: ",)
 
 	if (!browser){
-		vscode.window.showInformationMessage("Loading extension please wait...");
+		vscode.window.showInformationMessage("Loading Hover preview extension please wait...");
 		return
 	}
 
@@ -220,24 +237,32 @@ async function renderHtmlToImage(browser, filePath=null, html=null) {
 	}else{
 		page = browser.pages[0]
 	}
-	await page.goto(filePath)
+	await page.goto(htmlFilePath)
 	// https://stackoverflow.com/questions/62592345/puppeteer-wont-load-images-if-page-is-loaded-using-setcontent
 	// await page.setContent(html, { waitUntil:  ["load","networkidle0"] });
 	
-	console.log("Working2")
-	// FIXME: file path
-	const imgPath = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, 'test.png') 
-	console.log("extension path: ",  imgPath)
+	// FIXME: file path caching problem
+
+	const tempImagePath = path.join(getGlobalStoragePath(context), `hoverpreview-img.png`);
+
+    // Write the image file (for demo purposes, assuming imageData is a buffer or base64 string)
+    // const imageData = '...'; // Your image data here
+    // fs.writeFileSync(tempImagePath, imageData, 'base64'); // Use 'base64' if imageData is base64 encoded
+
+
+	// const imgPath = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, 'test.png') 
+	// console.log("extension path: ",  tempImagePath)
 	// page.addStyleTag({path: "/css/tailwind-build.css"})
 	// https://pptr.dev/guides/screenshots/
 	const screenshot = await page.screenshot({ 
 												// encoding: 'base64', 
 												omitBackground: false, 
-												path: imgPath
+												path: tempImagePath
 											});
 	// await browser.close();
 	// return `data:image/png;base64,${screenshot}`;
-	return imgPath;
+	// return imgPath;
+	return vscode.Uri.file(tempImagePath);
 }
 
 
