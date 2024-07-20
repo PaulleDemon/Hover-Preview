@@ -1,4 +1,9 @@
 # Hover preview - VsCode extension [BETA] 
+
+<p>
+    <img src="./icons/hover-preview.png" width="100" height="100" alt="preview">
+</p>
+
 This is a simple vscode extension used for previewing your html elements while hovering.
 Currently made for html files only.
 
@@ -11,7 +16,9 @@ This is still in beta, currently this extension will create a temp file in your 
 
 Have you seen a code like this and gone, what does this even do???
 
-![tailwind code](./documentation/images/tailwind-code.png)
+<p>
+    <img src="./documentation/images/tailwind-code.png" width="450" height="350" alt="preview">
+</p>
 
 
 well now you don't, cause hover preview will show you exactly what that renders in browser
@@ -34,7 +41,7 @@ Coming soon!
 
 ## Release Notes
 
-This is the first version of the extension. Feel free to test it. Pretty soon 
+This is the first version of the extension. Feel free to test it. Stable release coming pretty soon.
 
 ### 1.0.0 [beta]
 
