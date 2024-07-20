@@ -1,4 +1,4 @@
-# Hover preview - VsCode extension [BETA] 
+# Hover preview 🚀 - VsCode extension [BETA] 
 
 <p>
     <img src="./icons/hover-preview.png" width="100" height="100" alt="preview">
@@ -25,11 +25,11 @@ well now you don't, cause hover preview will show you exactly what that renders 
 
 ![preview](./documentation/images/preview.gif)
 
-## Roadmap
+## Roadmap 🗺️
 
 Please refer to [roadmap](roadmap.md) 
 
-## Features
+## Features 🌟
 * Preview on hover
 * Coming soon...
 
