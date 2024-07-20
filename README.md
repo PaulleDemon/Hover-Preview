@@ -1,8 +1,22 @@
-# Hover preview - VsCode extension 
+# Hover preview - VsCode extension [BETA] 
+This is a simple vscode extension used for previewing your html elements while hovering.
 
-This is the README for your extension "hover preview". After writing up a brief description, we recommend including the following sections.
+>[!NOTE]
+This is still in beta, currently this extension will create a temp file in your working directory to render the html (called `.hoverpreview.temp.html`), we'll soon change that. Please refer to [roadmap](roadmap.md)
 
-https://pptr.dev/guides/system-requirements
+## Why use Hover preview?
+
+Have you seen a code like this and gone, what does this even do???
+
+![tailwind code](./documentation/images/tailwind-code.png)
+
+
+well now you don't, cause hover preview will show you exactly what that renders in browser
+
+
+## Roadmap
+
+Please refer to [roadmap](roadmap.md) 
 
 ## Features
 
@@ -14,54 +28,31 @@ For example if there is an image subfolder under your extension project workspac
 
 > Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
 
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Coming soon!
 
-For example:
 
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+This is the first version of the extension. Feel free to test it. Pretty soon 
 
-### 1.0.0
+### 1.0.0 [beta]
 
-Initial release of ...
+Current release
 
-### 1.0.1
+### Extra
 
-Fixed issue #.
+* Oh! don't forget to 🌟 [star this repo](https://github.com/PaulleDemon/Hover-Preview) for updates.
 
-### 1.1.0
+* Thanks for visiting Hover Preview, enjoy your free [landing page templates](https://github.com/PaulleDemon/landing-pages)
 
-Added features X, Y, and Z.
+
+**Enjoy!**
 
 ---
 
-## Working with Markdown
+## License
+The source code is under AGPL license, this doesn't affect the end user. 
 
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**

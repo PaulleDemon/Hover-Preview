@@ -45,9 +45,9 @@ function activate(context) {
 			width: 1800,
 			height: 900
 		}
-	}).then(bwr => {
+	}).then(browserObj => {
 		// You can use the `browser` object here
-		browser = bwr
+		browser = browserObj;
 	}).catch(error => {
 		console.error('Error launching Puppeteer:', error);
 		vscode.window.showErrorMessage("Hover preview error launching puppeteer")
@@ -62,7 +62,15 @@ function activate(context) {
 			const fullTag = getHoverTagContents(offset, document, htmlLanguageService);
 
 			if (fullTag) {
-				const baseUri = vscode.workspace.workspaceFolders[0].uri.fsPath;
+				// const baseUri = vscode.workspace.workspaceFolders[0].uri.fsPath;// this gets the current working folder
+				const currentFilePath = vscode.window.activeTextEditor?.document.uri.fsPath;
+
+				if (!currentFilePath){
+					vscode.window.showErrorMessage("No open html file")
+					return 
+				}
+
+				const baseUri = vscode.Uri.file(path.resolve(currentFilePath, "..")).fsPath; // get the active working directory
 
 				const filePath = path.join(baseUri, '.hoverpreview.temp.html');
 				fs.writeFileSync(filePath, fullTag, 'utf8'); // create a temp file and write the contents
