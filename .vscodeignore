@@ -11,6 +11,7 @@ vsc-extension-quickstart.md
 notes.md
 roadmap.md
 CHANGELOG.md
+.github/**
 
 node_modules/
 out/
