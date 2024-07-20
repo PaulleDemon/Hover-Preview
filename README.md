@@ -1,7 +1,7 @@
 # Hover preview 🚀 - VsCode extension [BETA] 
 
 <p>
-    <img src="./icons/hover-preview.png" width="100" height="100" alt="preview">
+    <img src="https://raw.githubusercontent.com/PaulleDemon/Hover-Preview/main/icons/hover-preview.png" width="100" height="100" alt="preview">
 </p>
 
 This is a simple vscode extension used for previewing your html elements while hovering.
@@ -10,20 +10,20 @@ Currently made for html files only.
 >[!NOTE]
 This is still in beta, currently this extension will create a temp file in your working directory to render the html (called `.hoverpreview.temp.html`), we'll soon change that. Please refer to [roadmap](roadmap.md)
 
-![preview](./documentation/images/preview.gif)
+![preview](https://raw.githubusercontent.com/PaulleDemon/Hover-Preview/main/documentation/images/preview.gif)
 
 ## Why use Hover preview?
 
 Have you seen a code like this and gone, what does this even do???
 
 <p>
-    <img src="./documentation/images/tailwind-code.png" width="450" height="350" alt="preview">
+    <img src="https://raw.githubusercontent.com/PaulleDemon/Hover-Preview/main/documentation/images/tailwind-code.png" width="450" height="350" alt="preview">
 </p>
 
 
 well now you don't, cause hover preview will show you exactly what that renders in browser
 
-![preview](./documentation/images/preview.gif)
+![preview](https://raw.githubusercontent.com/PaulleDemon/Hover-Preview/main/documentation/images/preview.gif)
 
 ## Roadmap 🗺️
 
