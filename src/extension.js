@@ -2,6 +2,7 @@
 const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
+const {v4} = require('uuid')
 
 // const htmlToImage = require('html-to-image');
 
@@ -11,18 +12,21 @@ var HTMLParser = require('node-html-parser');
 const puppeteer = require('puppeteer');
 const { getLanguageService } = require('vscode-html-languageservice');
 
-const { isValidHttpUrl, isLocalFile, getActiveFilePath, toAbsoluteUrl, isUrlEncodedFile } = require("./utils/common.js")
-const { HoverWebViewPanel } = require("./webview/previewPanel.js");
+let browser = null;
 
+const imgDir = '.tmp-img'
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 
 /**
+ * This method is called when your extension is activated
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-
+	
+	if (!fs.existsSync(path.join(getGlobalStoragePath(context), imgDir))){
+		// create a temp directory in global storage to store temp img files
+		fs.mkdirSync(path.join(getGlobalStoragePath(context), imgDir));
+	}
 
 	console.log('"Hover preview" is now active!');
 
@@ -33,24 +37,23 @@ function activate(context) {
 		vscode.window.showInformationMessage('Hello! from HoverPreview!');
 	});
 
-	const webviewCommand = vscode.commands.registerCommand("hoverpreview.helloWorld", () => {
-		HoverWebViewPanel.render();
-	});
-
 	const htmlLanguageService = getLanguageService();
 
-	let browser = null;
+	// let browser = null;
 	// https://pptr.dev/api/puppeteer.puppeteernodelaunchoptions
-	(async () => {
-		browser = await puppeteer.launch({
+	puppeteer.launch({
 		args: ['--no-sandbox', '--disable-setuid-sandbox'],
 		defaultViewport: {
 			width: 1800,
 			height: 900
 		}
+	}).then(bwr => {
+		// You can use the `browser` object here
+		browser = bwr
+	}).catch(error => {
+		console.error('Error launching Puppeteer:', error);
+		vscode.window.showErrorMessage("Hover preview error launching puppeteer")
 	});
-	})()
-	console.log("WE: ", )
 
 	const disposableHover = vscode.languages.registerHoverProvider("html", {
 		async provideHover(document, position, token) {
@@ -67,15 +70,24 @@ function activate(context) {
 				fs.writeFileSync(filePath, fullTag, 'utf8'); // create a temp file and write the contents
 
 				const pathUri = vscode.Uri.file(filePath).toString() // adds file:/// eg: file:///home/documents
+				
 				const imgUri = await renderHtmlToImage(browser, context, pathUri, fullTag);
-				console.log("img uri: ", imgUri.fsPath, imgUri.path)
+				// const id = v4()
+				// imgUri.with({query: `id=${id}`})
+
 				fs.unlink(filePath, ()=>{}) // remove the file after rendering
+				
+				const imgPath = `${imgUri.path}`
+				console.log("img uri: ", imgPath)
+
 				// Include an image in the hover text
-				const hoverContent = new vscode.MarkdownString(`<img src='${imgUri.path}?time=${new Date().getTime()}' alt="rendered preview" width='200' height='200'/>`); // new Date is there to avoid caching and preview new one
-				// const hoverContent = new vscode.MarkdownString(fullTag);
-				hoverContent.supportHtml = true;
+				// const hoverContent = new vscode.MarkdownString(`<img src='${imgUri}' alt="rendered preview" width='200' height='200'/>`); // new Date is there to avoid caching and preview new one
+				const hoverContent = new vscode.MarkdownString(`![preview](${imgUri}|width=200|height=200)`); // new Date is there to avoid caching and preview new one
+				// hoverContent.supportHtml = true;
 				hoverContent.isTrusted = true;
-				// hoverContent.baseUri = vscode.Uri.file(imgSrc)
+				// hoverContent.value = imgUri.query;
+				hoverContent.baseUri = imgUri;
+				
 				return new vscode.Hover(hoverContent);
 
 			}
@@ -86,7 +98,6 @@ function activate(context) {
 
 	context.subscriptions.push(disposableHover);
 	context.subscriptions.push(disposable);
-	context.subscriptions.push(webviewCommand);
 }
 
 /**
@@ -142,34 +153,6 @@ function getHoverTagContents(offset, document, htmlLanguageService) {
 
 
 /**
- * 
- * @param {string} text 
- */
-function updateDocumentWithSrcUrl(text, baseUri){
-
-	const parseDoc = HTMLParser.parse(text)
-
-	parseDoc.querySelectorAll("link").forEach((ele) => {
-		const href = ele.getAttribute("href");
-
-		if (href && isLocalFile(href)){
-			ele.setAttribute("href",  toAbsoluteUrl(baseUri, href));//vscode.Uri.file(href).toString());
-		}
-	});
-
-	parseDoc.querySelectorAll("img, script, video").forEach((ele) => {
-		const src = ele.getAttribute("src");
-		
-		if (src && isLocalFile(src)){
-			ele.setAttribute("src", toAbsoluteUrl(baseUri, src));
-		}
-	});
-
-	return parseDoc.toString()
-}
-
-
-/**
  * Extracts script and link styling tags and adds to the original styleAndScriptTags list
  * This is necessary to render the page with styles applied. If the path is relative then its 
  * converted to absolute path
@@ -191,28 +174,6 @@ function addStyleAndScriptTags(node, styleAndScriptTags, baseUri) {
 	}
 }
 
-/**
- * updates all links, img, video paths from relative to absolute uris
- * @param {import('vscode-html-languageservice').Node} node 
- */
-function updateLocalUris(node, baseUri){
-	
-	if (!["img", "link", "script", "video"].includes(node.tag)){
-		// check if the elements in the list match and they have either href or src attribute
-		return
-	}
-
-	if (node.tag === "link" && Object.hasOwn(node.attributes, "href") && isLocalFile(node.attributes.href)){
-		console.log("updating uri", vscode.Uri.file(node.attributes.href).toString());
-		node.attributes.href = "updated"//toAbsoluteUrl(baseUri, node.attributes.href)
-	}else if (Object.hasOwn(node.attributes, "src") && isLocalFile(node.attributes.src) && 
-				!isUrlEncodedFile(node.attributes.src)){
-		// script tags, img, videos
-		node.attributes.src = "Vola"; //toAbsoluteUrl(baseUri, node.attributes.src)
-	}
-
-}
-
 
 /**
  * uses puppeteer and renders html and takes a screenshot
@@ -223,7 +184,6 @@ function updateLocalUris(node, baseUri){
  * @returns 
  */
 async function renderHtmlToImage(browser, context, htmlFilePath=null, html=null) {
-	console.log("Path: ",)
 
 	if (!browser){
 		vscode.window.showInformationMessage("Loading Hover preview extension please wait...");
@@ -236,23 +196,17 @@ async function renderHtmlToImage(browser, context, htmlFilePath=null, html=null)
 		page = await browser.newPage();
 	}else{
 		page = browser.pages[0]
+		page.reload()
 	}
 	await page.goto(htmlFilePath)
 	// https://stackoverflow.com/questions/62592345/puppeteer-wont-load-images-if-page-is-loaded-using-setcontent
 	// await page.setContent(html, { waitUntil:  ["load","networkidle0"] });
 	
-	// FIXME: file path caching problem
-
-	const tempImagePath = path.join(getGlobalStoragePath(context), `hoverpreview-img.png`);
-
-    // Write the image file (for demo purposes, assuming imageData is a buffer or base64 string)
-    // const imageData = '...'; // Your image data here
-    // fs.writeFileSync(tempImagePath, imageData, 'base64'); // Use 'base64' if imageData is base64 encoded
-
-
-	// const imgPath = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, 'test.png') 
-	// console.log("extension path: ",  tempImagePath)
+	// NOTE: to avoid file path caching problem, well use write files with 
+	
+	const tempImagePath = path.join(getGlobalStoragePath(context), imgDir, `hover-preview-${new Date()}.jpg`);
 	// page.addStyleTag({path: "/css/tailwind-build.css"})
+	
 	// https://pptr.dev/guides/screenshots/
 	const screenshot = await page.screenshot({ 
 												// encoding: 'base64', 
@@ -262,12 +216,17 @@ async function renderHtmlToImage(browser, context, htmlFilePath=null, html=null)
 	// await browser.close();
 	// return `data:image/png;base64,${screenshot}`;
 	// return imgPath;
+	// return vscode.Uri.file(tempImagePath).with({query: `id=${v4()}`});
 	return vscode.Uri.file(tempImagePath);
 }
 
 
 // This method is called when your extension is deactivated
-function deactivate() { }
+function deactivate() {
+	if (browser){
+		browser.close()
+	}
+ }
 
 module.exports = {
 	activate,

@@ -23,7 +23,7 @@
   },
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.70.0"
+    "vscode": "^1.80.0"
   },
   "categories": [
     "Other"
@@ -38,11 +38,6 @@
         "command": "hoverpreview.enablePreview",
         "category": "Hover preview",
         "title": "Enable hover preview"
-      },
-      {
-        "command": "hoverpreview.helloWorld",
-        "category": "Hover preview",
-        "title": "Hello world from webview"
       }
     ],
     "languages": [
@@ -78,6 +73,7 @@
     "htmlparser2": "^9.1.0",
     "node-html-parser": "^6.1.13",
     "puppeteer": "^22.13.1",
+    "uuid": "^10.0.0",
     "vscode-html-languageservice": "^5.3.0"
   }
 }

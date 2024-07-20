@@ -5,3 +5,4 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 node_modules
 .tmp
+notes.md
