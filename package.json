@@ -29,15 +29,15 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:html"
+
   ],
   "main": "./src/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "hoverpreview.enablePreview",
+        "command": "hoverpreview.hello",
         "category": "Hover preview",
-        "title": "Enable hover preview"
+        "title": "Hello"
       }
     ],
     "languages": [
@@ -69,6 +69,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "fs-extra": "^11.2.0",
     "html-to-image": "^1.11.11",
     "htmlparser2": "^9.1.0",
     "node-html-parser": "^6.1.13",

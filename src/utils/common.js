@@ -2,6 +2,8 @@ const vscode = require('vscode');
 const path = require('path');
 const HTMLParser = require('node-html-parser');
 
+const fs = require('fs')
+
 /**
  * 
  * @param {string} link 
@@ -72,10 +74,67 @@ function updateDocumentWithSrcUrl(text, baseUri){
 	return parseDoc.toString()
 }
 
-function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+
+/**
+ * asynchronously removes all file from a directory except the exception file
+ * @param {string} dir - directory name
+ * @param {string} exceptionFile - file name
+ */
+function rmFilesExcept(dir, exceptionFile){
+
+    fs.readdir(dir, (err, files) => {
+        if (err) throw err;
+      
+        for (const file of files) {
+
+            if (file === exceptionFile)
+                continue
+
+            fs.unlink(path.join(dir, file), (err) => {
+                if (err) throw err;
+            });
+        }
+    });
+
+}
+
+/**
+ * emptys the directory
+ * @param {string} dir - directory path 
+ */
+function rmDirFiles(dir){
+    fs.readdir(dir, (err, files) => {
+        if (err) throw err;
+      
+        for (const file of files) {
+            fs.unlink(path.join(dir, file), (err) => {
+                if (err) throw err;
+            });
+        }
+    });
+}
+
+
+/**
+ * Extracts script and link styling tags and adds to the original styleAndScriptTags list
+ * This is necessary to render the page with styles applied. If the path is relative then its 
+ * converted to absolute path
+ * @param {import('vscode-html-languageservice').Node} node 
+ * @param {any[]} styleAndScriptTags 
+ * @param {string} baseUri  
+ */
+function addStyleAndScriptTags(node, styleAndScriptTags, baseUri) {
+	// console.log("root: ", node.tag)
+
+	if (node.tag === 'link' || node.tag === 'script') {
+		styleAndScriptTags.push(node);
+	}
+
+	if (node.children) {
+		node.children.forEach(child => {
+			addStyleAndScriptTags(child, styleAndScriptTags, baseUri);
+		});
+	}
 }
 
 module.exports = {
@@ -83,5 +142,6 @@ module.exports = {
     getActiveFilePath,
     toAbsoluteUrl,
     isLocalFile,
-    getRandomInt
+    rmDirFiles,
+    rmFilesExcept
 };

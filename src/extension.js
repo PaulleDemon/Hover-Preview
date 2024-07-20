@@ -1,20 +1,20 @@
+
 // The module 'vscode' contains the VS Code extensibility API
 const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
-const {v4} = require('uuid')
 
-// const htmlToImage = require('html-to-image');
+const  HTMLParser = require('node-html-parser');
 
-var HTMLParser = require('node-html-parser');
-
-// const htmlparser2 = require('htmlparser2');
 const puppeteer = require('puppeteer');
 const { getLanguageService } = require('vscode-html-languageservice');
 
-let browser = null;
+const { rmDirFiles, rmFilesExcept } = require('./utils/common.js');
 
-const imgDir = '.tmp-img'
+
+let browser = null; // puppeteer browser instance
+const imgDir = '.tmp-img' // temp img directory
+
 
 
 /**
@@ -30,11 +30,9 @@ function activate(context) {
 
 	console.log('"Hover preview" is now active!');
 
-	const disposable = vscode.commands.registerCommand('hoverpreview.enablePreview', function () {
-		// The code you place here will be executed every time your command is executed
-
+	const disposable = vscode.commands.registerCommand('hoverpreview.hello', function () {
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello! from HoverPreview!');
+		vscode.window.showInformationMessage('Hello 👋 from HoverPreview!');
 	});
 
 	const htmlLanguageService = getLanguageService();
@@ -71,21 +69,15 @@ function activate(context) {
 
 				const pathUri = vscode.Uri.file(filePath).toString() // adds file:/// eg: file:///home/documents
 				
-				const imgUri = await renderHtmlToImage(browser, context, pathUri, fullTag);
-				// const id = v4()
-				// imgUri.with({query: `id=${id}`})
+				const imgUri = await renderHtmlToImage(browser, context, pathUri);
 
-				fs.unlink(filePath, ()=>{}) // remove the file after rendering
-				
-				const imgPath = `${imgUri.path}`
-				console.log("img uri: ", imgPath)
-
+				fs.unlink(filePath, ()=>{}) // remove the temp file after rendering
+			
 				// Include an image in the hover text
 				// const hoverContent = new vscode.MarkdownString(`<img src='${imgUri}' alt="rendered preview" width='200' height='200'/>`); // new Date is there to avoid caching and preview new one
 				const hoverContent = new vscode.MarkdownString(`![preview](${imgUri}|width=200|height=200)`); // new Date is there to avoid caching and preview new one
 				// hoverContent.supportHtml = true;
 				hoverContent.isTrusted = true;
-				// hoverContent.value = imgUri.query;
 				hoverContent.baseUri = imgUri;
 				
 				return new vscode.Hover(hoverContent);
@@ -125,53 +117,33 @@ function getGlobalStoragePath(context){
 function getHoverTagContents(offset, document, htmlLanguageService) {
 	const htmlDocument = htmlLanguageService.parseHTMLDocument(document);
 	const node = htmlDocument.findNodeAt(offset);
-	const baseUri = vscode.workspace.workspaceFolders[0].uri.fsPath;
-
-	// console.log("Base uri: ", baseUri.toString());
 
 	const startOffset = node.start;
 	const endOffset = node.end;
-	const text = document.getText();
-	let subTags = text.substring(startOffset, endOffset + 1);
-	const styleAndScriptTags = [];
+
+	const htmlText = document.getText();
+	let subTags = htmlText.substring(startOffset, endOffset + 1);
 
 	if (subTags) {
 		// only if there are tags near hover position add the script and styling tags else don't add
-		htmlDocument.roots.forEach(root => {
-			addStyleAndScriptTags(root, styleAndScriptTags, baseUri.toString());
-		});
-		styleAndScriptTags.forEach(tag => {
-			const tagStart = tag.start;
-			const tagEnd = tag.end;
-			subTags += text.substring(tagStart, tagEnd + 1);
-		});
+		subTags += extractStyleScriptTags(htmlText)
 	}
-	// console.log("sub tags: ", updateDocumentWithSrcUrl(subTags, baseUri))
+	// console.log("sub tags: ", subTags)
 
 	return subTags;
 }
 
 
 /**
- * Extracts script and link styling tags and adds to the original styleAndScriptTags list
- * This is necessary to render the page with styles applied. If the path is relative then its 
- * converted to absolute path
- * @param {import('vscode-html-languageservice').Node} node 
- * @param {any[]} styleAndScriptTags 
- * @param {string} baseUri  
+ * returns link and style tags
+ * @param {string} document 
  */
-function addStyleAndScriptTags(node, styleAndScriptTags, baseUri) {
-	// console.log("root: ", node.tag)
+function extractStyleScriptTags(document){
 
-	if (node.tag === 'link' || node.tag === 'script') {
-		styleAndScriptTags.push(node);
-	}
+	const parsedHtml = HTMLParser.parse(document);
+	const tags = parsedHtml.querySelectorAll("link, script");
 
-	if (node.children) {
-		node.children.forEach(child => {
-			addStyleAndScriptTags(child, styleAndScriptTags, baseUri);
-		});
-	}
+	return tags.join("\n");
 }
 
 
@@ -180,14 +152,13 @@ function addStyleAndScriptTags(node, styleAndScriptTags, baseUri) {
  * @param {puppeteer.Browser} browser 
  * @param {import('vscode').ExtensionContext} context 
  * @param {string|null} htmlFilePath 
- * @param {string|null} html 
  * @returns 
  */
-async function renderHtmlToImage(browser, context, htmlFilePath=null, html=null) {
+async function renderHtmlToImage(browser, context, htmlFilePath=null) {
 
 	if (!browser){
 		vscode.window.showInformationMessage("Loading Hover preview extension please wait...");
-		return
+		return null;
 	}
 
 	let page = null;
@@ -201,22 +172,25 @@ async function renderHtmlToImage(browser, context, htmlFilePath=null, html=null)
 	await page.goto(htmlFilePath)
 	// https://stackoverflow.com/questions/62592345/puppeteer-wont-load-images-if-page-is-loaded-using-setcontent
 	// await page.setContent(html, { waitUntil:  ["load","networkidle0"] });
-	
-	// NOTE: to avoid file path caching problem, well use write files with 
-	
-	const tempImagePath = path.join(getGlobalStoragePath(context), imgDir, `hover-preview-${new Date()}.jpg`);
 	// page.addStyleTag({path: "/css/tailwind-build.css"})
 	
+	// NOTE: to avoid file path caching problem, we'll create a new file everytime a SS is taken
+	const fileName = `hover-preview-${new Date()}.jpg`
+
+	const tempImagePath = path.join(getGlobalStoragePath(context), imgDir, fileName);
+
+	rmFilesExcept(path.join(getGlobalStoragePath(context), imgDir), fileName); // empty the tmp directory to avoid using up storage
+	
 	// https://pptr.dev/guides/screenshots/
-	const screenshot = await page.screenshot({ 
-												// encoding: 'base64', 
-												omitBackground: false, 
-												path: tempImagePath
-											});
-	// await browser.close();
+	await page.screenshot({ 
+							// encoding: 'base64', 
+							omitBackground: false, 
+							path: tempImagePath
+						});
+
 	// return `data:image/png;base64,${screenshot}`;
 	// return imgPath;
-	// return vscode.Uri.file(tempImagePath).with({query: `id=${v4()}`});
+	// return vscode.Uri.file(tempImagePath);
 	return vscode.Uri.file(tempImagePath);
 }
 
