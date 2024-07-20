@@ -11,4 +11,10 @@ vsc-extension-quickstart.md
 notes.md
 roadmap.md
 CHANGELOG.md
-documentation/**
+
+node_modules/
+out/
+src/
+tsconfig.json
+webpack.config.js
+esbuild.js

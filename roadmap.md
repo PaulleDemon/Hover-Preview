@@ -10,7 +10,7 @@
 - [ ] Optimization
 ...
 
-### 1.0.1
+### 1.1.0
 - [ ] Add multiple screens, Mobile and Desktop view.
 - [ ] Allow rendering in users preferred file type, (png etc)
 

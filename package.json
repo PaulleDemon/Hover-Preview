@@ -4,7 +4,7 @@
   "publisher": "FoxcraftTech",
   "description": "hover over html tags to view the rendered output",
   "icon": "icons/hover-preview-128.png",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": [
     "hover preview",
     "preview on hover html",
@@ -31,7 +31,7 @@
     "Other"
   ],
   "activationEvents": [],
-  "main": "./src/extension.js",
+  "main": "./dist/extension",
   "contributes": {
     "commands": [
       {
@@ -57,7 +57,12 @@
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "vscode:prepublish": "npm run -S esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.js --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run -S esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run -S esbuild-base -- --sourcemap --watch",
+    "test-compile": "tsc -p ./"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.7",
@@ -65,7 +70,9 @@
     "@types/vscode": "^1.82.0",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0",
+    "esbuild": "^0.23.0",
     "eslint": "^8.57.0",
+    "npm-run-all": "^4.1.5",
     "typescript": "^5.4.5"
   },
   "dependencies": {
