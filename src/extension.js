@@ -9,11 +9,11 @@ const  HTMLParser = require('node-html-parser');
 const puppeteer = require('puppeteer');
 const { getLanguageService } = require('vscode-html-languageservice');
 
-const { rmDirFiles, rmFilesExcept } = require('./utils/common.js');
+const { rmFilesExcept } = require('./utils/helper.js');
 
 
 let browser = null; // puppeteer browser instance
-const imgDir = '.tmp-img' // temp img directory
+const imgDir = '.tmp-img'; // temp img directory
 
 
 
@@ -37,7 +37,6 @@ function activate(context) {
 
 	const htmlLanguageService = getLanguageService();
 
-	// let browser = null;
 	// https://pptr.dev/api/puppeteer.puppeteernodelaunchoptions
 	puppeteer.launch({
 		args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -48,9 +47,11 @@ function activate(context) {
 	}).then(browserObj => {
 		// You can use the `browser` object here
 		browser = browserObj;
+		vscode.window.showInformationMessage('HoverPreview is now ready!');
+
 	}).catch(error => {
 		console.error('Error launching Puppeteer:', error);
-		vscode.window.showErrorMessage("Hover preview error launching puppeteer")
+		vscode.window.showErrorMessage("Hover preview error launching puppeteer");
 	});
 
 	const disposableHover = vscode.languages.registerHoverProvider("html", {
@@ -66,8 +67,8 @@ function activate(context) {
 				const currentFilePath = vscode.window.activeTextEditor?.document.uri.fsPath;
 
 				if (!currentFilePath){
-					vscode.window.showErrorMessage("No open html file")
-					return 
+					vscode.window.showErrorMessage("No open html file");
+					return;
 				}
 
 				const baseUri = vscode.Uri.file(path.resolve(currentFilePath, "..")).fsPath; // get the active working directory
@@ -75,11 +76,11 @@ function activate(context) {
 				const filePath = path.join(baseUri, '.hoverpreview.temp.html');
 				fs.writeFileSync(filePath, fullTag, 'utf8'); // create a temp file and write the contents
 
-				const pathUri = vscode.Uri.file(filePath).toString() // adds file:/// eg: file:///home/documents
+				const pathUri = vscode.Uri.file(filePath).toString(); // adds file:/// eg: file:///home/documents
 				
 				const imgUri = await renderHtmlToImage(browser, context, pathUri);
 
-				fs.unlink(filePath, ()=>{}) // remove the temp file after rendering
+				fs.unlink(filePath, ()=>{}); // remove the temp file after rendering
 			
 				// Include an image in the hover text
 				// const hoverContent = new vscode.MarkdownString(`<img src='${imgUri}' alt="rendered preview" width='200' height='200'/>`); // new Date is there to avoid caching and preview new one
@@ -112,7 +113,7 @@ function getGlobalStoragePath(context){
         fs.mkdirSync(globalStoragePath, { recursive: true });
     }
 
-    return globalStoragePath
+    return globalStoragePath;
 }
 
 /**
@@ -134,7 +135,7 @@ function getHoverTagContents(offset, document, htmlLanguageService) {
 
 	if (subTags) {
 		// only if there are tags near hover position add the script and styling tags else don't add
-		subTags += extractStyleScriptTags(htmlText)
+		subTags += extractStyleScriptTags(htmlText);
 	}
 	// console.log("sub tags: ", subTags)
 
@@ -174,16 +175,16 @@ async function renderHtmlToImage(browser, context, htmlFilePath=null) {
 	if (browser.pages.length === 0){
 		page = await browser.newPage();
 	}else{
-		page = browser.pages[0]
-		page.reload()
+		page = browser.pages[0];
+		page.reload();
 	}
-	await page.goto(htmlFilePath)
+	await page.goto(htmlFilePath);
 	// https://stackoverflow.com/questions/62592345/puppeteer-wont-load-images-if-page-is-loaded-using-setcontent
 	// await page.setContent(html, { waitUntil:  ["load","networkidle0"] });
 	// page.addStyleTag({path: "/css/tailwind-build.css"})
 	
-	// NOTE: to avoid file path caching problem, we'll create a new file everytime a SS is taken
-	const fileName = `hover-preview-${new Date()}.jpg`
+	// NOTE: to avoid file path caching problem, we'll create a new file every time a SS is taken
+	const fileName = `hover-preview-${new Date()}.jpg`;
 
 	const tempImagePath = path.join(getGlobalStoragePath(context), imgDir, fileName);
 
@@ -206,7 +207,7 @@ async function renderHtmlToImage(browser, context, htmlFilePath=null) {
 // This method is called when your extension is deactivated
 function deactivate() {
 	if (browser){
-		browser.close()
+		browser.close();
 	}
  }
 

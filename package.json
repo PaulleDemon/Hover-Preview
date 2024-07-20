@@ -2,13 +2,15 @@
   "name": "hoverpreview",
   "displayName": "Hover Preview",
   "publisher": "FoxcraftTech",
+  "description": "hover over html tags to view the rendered output",
+  "icon": "icons/hover-preview-128.png",
+  "version": "1.0.0",
   "keywords": [
     "hover preview",
     "preview on hover html",
     "html renderer",
     "quick viewer"
   ],
-  "description": "hover over html tags to view the rendered output",
   "author": {
     "name": "Paul"
   },
@@ -21,16 +23,13 @@
     "type": "git",
     "url": "https://github.com/PaulleDemon"
   },
-  "version": "0.0.1",
   "engines": {
     "vscode": "^1.80.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-
-  ],
+  "activationEvents": [],
   "main": "./src/extension.js",
   "contributes": {
     "commands": [
@@ -70,11 +69,8 @@
   },
   "dependencies": {
     "fs-extra": "^11.2.0",
-    "html-to-image": "^1.11.11",
-    "htmlparser2": "^9.1.0",
     "node-html-parser": "^6.1.13",
     "puppeteer": "^22.13.1",
-    "uuid": "^10.0.0",
     "vscode-html-languageservice": "^5.3.0"
   }
 }

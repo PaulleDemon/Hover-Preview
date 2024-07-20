@@ -2,7 +2,7 @@ const vscode = require('vscode');
 const path = require('path');
 const HTMLParser = require('node-html-parser');
 
-const fs = require('fs')
+const fs = require('fs');
 
 /**
  * 
@@ -71,7 +71,7 @@ function updateDocumentWithSrcUrl(text, baseUri){
 		}
 	});
 
-	return parseDoc.toString()
+	return parseDoc.toString();
 }
 
 
