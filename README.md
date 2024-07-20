@@ -1,4 +1,4 @@
-# Hover preview README
+# Hover preview - VsCode extension 
 
 This is the README for your extension "hover preview". After writing up a brief description, we recommend including the following sections.
 

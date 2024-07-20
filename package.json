@@ -15,7 +15,7 @@
   "sponsor": {
     "url": "https://buymeacoffee.com/artpaul"
   },
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "homepage": "https://github.com/PaulleDemon",
   "repository": {
     "type": "git",
