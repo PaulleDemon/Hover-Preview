@@ -12,40 +12,41 @@ This is still in beta, currently this extension will create a temp file in your 
 
 ![preview](https://raw.githubusercontent.com/PaulleDemon/Hover-Preview/main/documentation/images/preview.gif)
 
-## Why use Hover preview?
+## What is Hover preview?
 
-Have you seen a code like this and gone, what does this even do???
+We have all come across front-end codes that we don't understand because of lack of visual cues. Like the
+one shown below
 
 <p>
     <img src="https://raw.githubusercontent.com/PaulleDemon/Hover-Preview/main/documentation/images/tailwind-code.png" width="450" height="350" alt="preview">
 </p>
 
 
-well now you don't, cause hover preview will show you exactly what that renders in browser
+Now it can become overwhelming at first glance if you have no prior experience in the CSS library or framework used in the code. So to make it easier Hover Preview provides you with a quick preview of what it the element would look like in the browser.
 
 ![preview](https://raw.githubusercontent.com/PaulleDemon/Hover-Preview/main/documentation/images/preview.gif)
 
-## Roadmap 🗺️
+## Why use Hover preview?
+1. Less toggling between Browser and VsCode.
+2. Easier to learn new CSS frameworks.
+3. Easily understand other's code with visual preview, making it ideal learning tool.
+4. Save time.
+5. Improve productivity.
 
-Please refer to [roadmap](roadmap.md) 
+## Features of Hover Preview 🌟
+1. Preview HTML pages on Hover.
+2. Preview Specific elements.
+3. Configure screen size
 
-## Features 🌟
-* Preview on hover
-* Coming soon...
 
 ## Extension Settings
 
 Coming soon!
 
+## Roadmap 🗺️
 
+Please refer to [roadmap](roadmap.md) 
 
-## Release Notes
-
-This is the first version of the extension. Feel free to test it. Stable release coming pretty soon.
-
-### 1.0.0 [beta]
-
-Current release
 
 ### Extra
 
