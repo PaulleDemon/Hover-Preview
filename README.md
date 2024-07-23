@@ -27,21 +27,54 @@ Now it can become overwhelming at first glance if you have no prior experience i
 ![preview](https://raw.githubusercontent.com/PaulleDemon/Hover-Preview/main/documentation/images/preview.gif)
 
 ## Why use Hover preview?
-1. Less toggling between Browser and VsCode.
-2. Easier to learn new CSS frameworks.
-3. Easily understand other's code with visual preview, making it ideal learning tool.
-4. Save time.
-5. Improve productivity.
+1. Less toggling between Browser and VsCode.\
+2. Get quick glance of the elements.
+3. Easier to learn new CSS frameworks.
+4. Easily understand other's code with visual preview, making it ideal learning tool.
+5. Save time.
+6. Improve productivity.
 
 ## Features of Hover Preview 🌟
 1. Preview HTML pages on Hover.
 2. Preview Specific elements.
-3. Configure screen size
+3. Configure screen size.
 
+## Limitations
+* Currently only available for HTML files.
+* Cannot interact wth the preview.
+* Animations won't be played in preview.
 
 ## Extension Settings
 
-Coming soon!
+Settings.json
+```json
+{
+    "hoverPreview.previewSize": { // changes the preview size on hover tooltip
+        "width": 200, // default size
+        "height": 200 // default size
+    },
+}
+
+```
+
+### Optional user License
+
+To support open-source development you can purchase a one-time license, which comes with additional 
+benefits such as priority support, Free landing pages, lifetime updates and more.
+
+| Type                                                                                              | Individual / Hobbyist                                              | Small startup (Team of 5)                                                                       | Growing (Team of 10)                                     | Team of 20                                                         |
+|---------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------------------------|--------------------------------------------------------------------|
+| **description**                                                                                   | You didn't have to, but you did because you  support open-source ❤️ | You understand how much impact it can have in  your startup and want to support its development | You want to support this tools development               | You support this tools development and  other open-source programs |
+| **No of license**                                                                                 | 1                                                                  | 5                                                                                               | 10                                                       | 20                                                                 |
+| **Lifetime license** (one-time  purchase)                                                         | ✅                                                                  | ✅                                                                                               | ✅                                                        | ✅                                                                  |
+| **Priority support** (Your issues and  feature request will be given  priority, over non-members) | ✅                                                                  | ✅                                                                                               | ✅                                                        | ✅                                                                  |
+| **Lifetime updates**                                                                              | ✅                                                                  | ✅                                                                                               | ✅                                                        | ✅                                                                  |
+| **Early access** to specific features                                                             | ✅                                                                  | ✅                                                                                               | ✅                                                        | ✅                                                                  |
+| Complementary free **landing page**                                                               | [a developers portfolio](https://jamie-dev-portfolio.netlify.app/) | [a SaaS landing page](https://ai-code.netlify.app/)                                             | [a SaaS landing page](https://ai-code.netlify.app/)      | [a SaaS landing page](https://ai-code.netlify.app/)                |
+| **Price**                                                                                         | $19                                                                | ~~$95~~ $49 (save 48.42%)                                                                       | ~~$190~~ $99 (save 47.89%)                               | ~~$380~~ $199 (save 47.63%)                                        |
+|                                                                                                   | [Get individual license](https://foxcraft.gumroad.com/l/hover-preview)           | [Get startup license](https://foxcraft.gumroad.com/l/hover-preview)                          | [Get growth license](https://foxcraft.gumroad.com/l/hover-preview) | [Get scale license](https://foxcraft.gumroad.com/l/hover-preview)           |
+
+More stuff will be added from time-to-time for premium users.
 
 ## Roadmap 🗺️
 

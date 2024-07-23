@@ -1,84 +1,111 @@
 {
-  "name": "hoverpreview",
-  "displayName": "Hover Preview",
-  "publisher": "FoxcraftTech",
-  "description": "hover over html tags to view the rendered output",
-  "icon": "icons/hover-preview-128.png",
-  "version": "1.0.2",
-  "keywords": [
-    "hover preview",
-    "preview on hover html",
-    "html renderer",
-    "quick viewer"
-  ],
-  "author": {
-    "name": "Paul"
-  },
-  "sponsor": {
-    "url": "https://buymeacoffee.com/artpaul"
-  },
-  "license": "AGPL-3.0-only",
-  "homepage": "https://github.com/PaulleDemon",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/PaulleDemon/Hover-Preview?tab=readme-ov-file"
-  },
-  "bugs": "https://github.com/PaulleDemon/Hover-Preview/issues/new/choose",
-  "engines": {
-    "vscode": "^1.82.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [],
-  "main": "./dist/extension",
-  "contributes": {
-    "commands": [
-      {
-        "command": "hoverpreview.hello",
-        "category": "Hover preview",
-        "title": "Hello"
-      }
+    "name": "hoverpreview",
+    "displayName": "Hover Preview",
+    "publisher": "FoxcraftTech",
+    "description": "hover over html tags to view the rendered output",
+    "icon": "icons/hover-preview-128.png",
+    "version": "1.0.2",
+    "keywords": [
+        "hover preview",
+        "preview on hover html",
+        "html renderer",
+        "quick viewer"
     ],
-    "languages": [
-      {
-        "id": "html",
-        "aliases": [
-          "HTML",
-          "HTML5"
+    "author": {
+        "name": "Paul"
+    },
+    "sponsor": {
+        "url": "https://buymeacoffee.com/artpaul"
+    },
+    "license": "AGPL-3.0-only",
+    "homepage": "https://github.com/PaulleDemon",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/PaulleDemon/Hover-Preview?tab=readme-ov-file"
+    },
+    "bugs": "https://github.com/PaulleDemon/Hover-Preview/issues/new/choose",
+    "engines": {
+        "vscode": "^1.82.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "hoverPreview.hello",
+                "category": "Hover preview",
+                "title": "Hello"
+            }
         ],
-        "extensions": [
-          ".html"
-        ],
-        "configuration": "./language-configuration.json"
-      }
-    ]
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "vscode-test",
-    "vscode:prepublish": "npm run -S esbuild-base -- --minify",
-    "esbuild-base": "esbuild ./src/extension.js --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
-    "esbuild": "npm run -S esbuild-base -- --sourcemap",
-    "esbuild-watch": "npm run -S esbuild-base -- --sourcemap --watch",
-    "test-compile": "tsc -p ./"
-  },
-  "devDependencies": {
-    "@types/mocha": "^10.0.7",
-    "@types/node": "20.x",
-    "@types/vscode": "^1.82.0",
-    "@vscode/test-cli": "^0.0.9",
-    "@vscode/test-electron": "^2.4.0",
-    "esbuild": "^0.23.0",
-    "eslint": "^8.57.0",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^5.4.5"
-  },
-  "dependencies": {
-    "fs-extra": "^11.2.0",
-    "node-html-parser": "^6.1.13",
-    "puppeteer": "^22.13.1",
-    "vscode-html-languageservice": "^5.3.0"
-  }
+        "configuration": {
+            "title": "Hover Preview",
+            "properties": {
+                "hoverPreview.previewSize": {
+                    "type": "object",
+                    "description": "height and width of the preview",
+                    "properties": {
+                        "width": {
+                            "type": "number",
+                            "default": 200,
+                            "description": "The width of the hover tooltip"
+                        },
+                        "height": {
+                            "type": "number",
+                            "default": 200,
+                            "description": "The height of the hover tooltip"
+                        }
+                    }
+                }
+            }
+        },
+        "languages": [
+            {
+                "id": "html",
+                "aliases": [
+                    "HTML",
+                    "HTML5"
+                ],
+                "extensions": [
+                    ".html"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ]
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "pretest": "npm run lint",
+        "test": "vscode-test",
+        "compile": "webpack --mode development",
+        "watch": "webpack --mode development --watch",
+        "vscode:prepublish": "npm run package",
+        "package": "webpack --mode production --devtool hidden-source-map"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.24.9",
+        "@babel/preset-env": "^7.24.8",
+        "@types/mocha": "^10.0.7",
+        "@types/node": "20.x",
+        "@types/vscode": "^1.82.0",
+        "@vscode/test-cli": "^0.0.9",
+        "@vscode/test-electron": "^2.4.0",
+        "babel-loader": "^9.1.3",
+        "esbuild": "^0.23.0",
+        "eslint": "^8.57.0",
+        "npm-run-all": "^4.1.5",
+        "typescript": "^5.4.5",
+        "webpack": "^5.93.0",
+        "webpack-cli": "^5.1.4",
+        "webpack-merge": "^6.0.1",
+        "webpack-node-externals": "^3.0.0"
+    },
+    "dependencies": {
+        "fs-extra": "^11.2.0",
+        "node-html-parser": "^6.1.13",
+        "puppeteer": "^22.13.1",
+        "vscode-html-languageservice": "^5.3.0"
+    }
 }

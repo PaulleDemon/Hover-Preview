@@ -12,6 +12,8 @@ notes.md
 roadmap.md
 CHANGELOG.md
 .github/**
+images/**
+documentation/**
 
 node_modules/
 out/

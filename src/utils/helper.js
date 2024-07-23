@@ -116,6 +116,17 @@ function rmDirFiles(dir){
 
 
 /**
+ * returns the configuration from settings.json file
+ * @param {string} key 
+ * @param {any} defaultValue, - if key not found whats the default it should return 
+ */
+function getConfiguration(key, defaultValue){
+    let configuration = vscode.workspace.getConfiguration('hoverPreview');
+    return configuration.get(key, defaultValue);
+}
+
+
+/**
  * Extracts script and link styling tags and adds to the original styleAndScriptTags list
  * This is necessary to render the page with styles applied. If the path is relative then its 
  * converted to absolute path
@@ -138,10 +149,7 @@ function addStyleAndScriptTags(node, styleAndScriptTags, baseUri) {
 }
 
 module.exports = {
-    isValidHttpUrl,
-    getActiveFilePath,
-    toAbsoluteUrl,
-    isLocalFile,
     rmDirFiles,
-    rmFilesExcept
+    rmFilesExcept,
+    getConfiguration
 };

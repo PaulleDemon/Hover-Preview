@@ -9,7 +9,7 @@ const  HTMLParser = require('node-html-parser');
 const puppeteer = require('puppeteer');
 const { getLanguageService } = require('vscode-html-languageservice');
 
-const { rmFilesExcept } = require('./utils/helper.js');
+const { rmFilesExcept, getConfiguration } = require('./utils/helper.js');
 
 
 let browser = null; // puppeteer browser instance
@@ -30,7 +30,7 @@ function activate(context) {
 
 	console.log('"Hover preview" is now active!');
 
-	const disposable = vscode.commands.registerCommand('hoverpreview.hello', function () {
+	const disposable = vscode.commands.registerCommand('hoverPreview.hello', function () {
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello 👋 from HoverPreview!');
 	});
@@ -57,12 +57,17 @@ function activate(context) {
 	const disposableHover = vscode.languages.registerHoverProvider("html", {
 		async provideHover(document, position, token) {
 
-			// const text = document.getText();
 			const offset = document.offsetAt(position);
 
 			const fullTag = getHoverTagContents(offset, document, htmlLanguageService);
 
 			if (fullTag) {
+				
+				let {width: previewWidth, height: previewHeight} = getConfiguration("previewSize", {width: 200, height: 200});
+
+				previewWidth = typeof previewWidth === 'number' ? previewWidth : 200;
+				previewHeight = typeof previewHeight === 'number' ? previewWidth : 200;
+
 				// const baseUri = vscode.workspace.workspaceFolders[0].uri.fsPath;// this gets the current working folder
 				const currentFilePath = vscode.window.activeTextEditor?.document.uri.fsPath;
 
@@ -84,7 +89,7 @@ function activate(context) {
 			
 				// Include an image in the hover text
 				// const hoverContent = new vscode.MarkdownString(`<img src='${imgUri}' alt="rendered preview" width='200' height='200'/>`); // new Date is there to avoid caching and preview new one
-				const hoverContent = new vscode.MarkdownString(`![preview](${imgUri}|width=200|height=200)`); // new Date is there to avoid caching and preview new one
+				const hoverContent = new vscode.MarkdownString(`![preview](${imgUri}|width=${previewWidth}|height=${previewHeight})`); // new Date is there to avoid caching and preview new one
 				// hoverContent.supportHtml = true;
 				hoverContent.isTrusted = true;
 				hoverContent.baseUri = imgUri;
