@@ -4,7 +4,7 @@
     "publisher": "FoxcraftTech",
     "description": "hover over html tags to view the rendered output",
     "icon": "icons/hover-preview-128.png",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "keywords": [
         "hover preview",
         "preview on hover html",

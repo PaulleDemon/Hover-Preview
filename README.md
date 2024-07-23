@@ -10,6 +10,8 @@ Currently made for html files only.
 >[!NOTE]
 This is still in beta, currently this extension will create a temp file in your working directory to render the html (called `.hoverpreview.temp.html`), we'll soon change that. Please refer to [roadmap](roadmap.md)
 
+**You must wait for the extension to completely load to preview** 
+
 ![preview](https://raw.githubusercontent.com/PaulleDemon/Hover-Preview/main/documentation/images/preview.gif)
 
 ## What is Hover preview?
@@ -18,7 +20,7 @@ We have all come across front-end codes that we don't understand because of lack
 one shown below
 
 <p>
-    <img src="https://raw.githubusercontent.com/PaulleDemon/Hover-Preview/main/documentation/images/tailwind-code.png" width="450" height="350" alt="preview">
+    <img src="https://raw.githubusercontent.com/PaulleDemon/Hover-Preview/main/documentation/images/code.png" width="550" height="350" alt="preview">
 </p>
 
 
