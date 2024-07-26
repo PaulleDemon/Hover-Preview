@@ -18,3 +18,4 @@
 
 ### 2.0.0
 - [ ] Add support for component based libraries and frameworks such as Reactjs, vue.js etc.
+- [ ] Add support for templates and partials
