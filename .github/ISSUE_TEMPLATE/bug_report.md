@@ -10,7 +10,7 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-** VScode version
+**VScode version**
 which version of vscode are you using? read [here](https://code.visualstudio.com/docs/supporting/FAQ#_how-do-i-find-the-version). If you are not in the latest release, please try updating.
 
 **To Reproduce**
