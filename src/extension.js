@@ -175,8 +175,7 @@ async function renderHtmlToImage(browser, context, htmlFilePath=null) {
 		return null;
 	}
 
-	let page = null;
-
+	let page = /** @type puppeteer.Page; */ null; 
 	if (browser.pages.length === 0){
 		page = await browser.newPage();
 	}else{
@@ -196,11 +195,18 @@ async function renderHtmlToImage(browser, context, htmlFilePath=null) {
 	rmFilesExcept(path.join(getGlobalStoragePath(context), imgDir), fileName); // empty the tmp directory to avoid using up storage
 	
 	// https://pptr.dev/guides/screenshots/
-	await page.screenshot({ 
-							// encoding: 'base64', 
-							omitBackground: false, 
-							path: tempImagePath
-						});
+	const fileElement = await page.waitForSelector('div');
+	await fileElement.screenshot({ 
+		// encoding: 'base64', 
+		omitBackground: false, 
+		path: tempImagePath
+	});
+
+	// await page.screenshot({ 
+	// 						// encoding: 'base64', 
+	// 						omitBackground: false, 
+	// 						path: tempImagePath
+	// 					});
 
 	// return `data:image/png;base64,${screenshot}`;
 	// return imgPath;

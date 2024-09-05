@@ -59,24 +59,11 @@ Settings.json
 
 ```
 
-### Optional user License
+### Support open-source development?
+Want to support further development?
+You can support my work on Ko-fi or BMC
 
-To support open-source development you can purchase a one-time license, which comes with additional 
-benefits such as priority support, Free landing pages, lifetime updates and more.
-
-| Type                                                                                              | Individual / Hobbyist                                              | Small startup (Team of 5)                                                                       | Growing (Team of 10)                                     | Team of 20                                                         |
-|---------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------------------------|--------------------------------------------------------------------|
-| **description**                                                                                   | You didn't have to, but you did because you  support open-source ❤️ | You understand how much impact it can have in  your startup and want to support its development | You want to support this tools development               | You support this tools development and  other open-source programs |
-| **No of license**                                                                                 | 1                                                                  | 5                                                                                               | 10                                                       | 20                                                                 |
-| **Lifetime license** (one-time  purchase)                                                         | ✅                                                                  | ✅                                                                                               | ✅                                                        | ✅                                                                  |
-| **Priority support** (Your issues and  feature request will be given  priority, over non-members) | ✅                                                                  | ✅                                                                                               | ✅                                                        | ✅                                                                  |
-| **Lifetime updates**                                                                              | ✅                                                                  | ✅                                                                                               | ✅                                                        | ✅                                                                  |
-| **Early access** to specific features                                                             | ✅                                                                  | ✅                                                                                               | ✅                                                        | ✅                                                                  |
-| Complementary free **landing page**                                                               | [a developers portfolio](https://jamie-dev-portfolio.netlify.app/) | [a SaaS landing page](https://ai-code.netlify.app/)                                             | [a SaaS landing page](https://ai-code.netlify.app/)      | [a SaaS landing page](https://ai-code.netlify.app/)                |
-| **Price**                                                                                         | $19                                                                | ~~$95~~ $49 (save 48.42%)                                                                       | ~~$190~~ $99 (save 47.89%)                               | ~~$380~~ $199 (save 47.63%)                                        |
-|                                                                                                   | [Get individual license](https://foxcraft.gumroad.com/l/hover-preview)           | [Get startup license](https://foxcraft.gumroad.com/l/hover-preview)                          | [Get growth license](https://foxcraft.gumroad.com/l/hover-preview) | [Get scale license](https://foxcraft.gumroad.com/l/hover-preview)           |
-
-More stuff will be added from time-to-time for premium users.
+<a href='https://ko-fi.com/L3L612WN7K' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 ## Roadmap 🗺️
 
